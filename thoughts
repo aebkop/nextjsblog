@@ -1,0 +1,32 @@
+home page -> list of posts from users your subbed too
+user home page
+settings/subscrpitions
+write a post
+
+Home page: 
+API call to get posts for current user
+api/gethomeposts/<USER>
+CSR
+
+User Home Page:
+Shows posts by that user
+api/getuserposts/<USER>
+ISR
+posts {
+    
+}
+
+
+Post
+Get that particular post
+api/getpost/<POST>
+ISR
+
+Settings/Subs: 
+See users you are following
+api/getprofile/<USER> 
+CSR
+
+TO ADD: 
+Comments
+Email sub
