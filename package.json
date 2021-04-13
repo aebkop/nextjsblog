@@ -1,6 +1,6 @@
 {
   "name": "blogsystem",
-  "version": "0.1.0",
+  "version": "v1.22.5",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@types/next-auth": "^3.13.0",
     "next": "10.1.3",
     "react": "17.0.2",
     "react-dom": "17.0.2",
