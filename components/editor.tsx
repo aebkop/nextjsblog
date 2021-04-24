@@ -4,8 +4,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { createEditor, Descendant, Editor, Element, Node, NodeMatch, Text, Transforms } from 'slate'
 
 // Import the Slate components and React plugin.
-import { Slate, Editable, withReact } from 'slate-react'
-import type { CustomEditor, CustomElement, Mark } from '../custom-types'
+import { Slate, Editable, withReact, useSlate } from 'slate-react'
+import { CustomEditor, CustomElement, FormattedText, Mark } from '../custom-types'
 
 // Define our own custom set of helpers.
 const PostEditor = {
@@ -17,10 +17,6 @@ const PostEditor = {
         return !!match
     },
 
-    isBoldMarkActive(editor: CustomEditor) {
-        return this.isMarkActive(editor,"bold")
-    },
-
     isBlockActive(editor: CustomEditor, element: CustomElement["type"]) {
         const [match] = Editor.nodes(editor, {
             match: n => Element.isElement(n) && n.type === element,
@@ -28,33 +24,20 @@ const PostEditor = {
         return !!match
     },
 
-    isCodeBlockActive(editor: CustomEditor) {
-        return this.isBlockActive(editor,"code")
-    },
-    
     toggleMark(editor: CustomEditor, marktype: keyof Mark) {
         const isActive = PostEditor.isMarkActive(editor,marktype)
-        Transforms.setNodes(
+        Transforms.setNodes<FormattedText>(
             editor,
-            { bold: isActive ? false : true },
+            { [marktype]: isActive ? false : true },
             { match: n => Text.isText(n), split: true }
         )
     },
-
-    toggleBoldMark(editor: CustomEditor) {
-        const isActive = PostEditor.isBoldMarkActive(editor)
+    
+    toggleBlock(editor: CustomEditor, element: CustomElement["type"]) {
+        const isActive = this.isBlockActive(editor, element)
         Transforms.setNodes(
             editor,
-            { bold: isActive ? false : true },
-            { match: n => Text.isText(n), split: true }
-        )
-    },
-
-    toggleCodeBlock(editor: CustomEditor) {
-        const isActive = PostEditor.isCodeBlockActive(editor)
-        Transforms.setNodes(
-            editor,
-            { type: isActive ? 'paragraph' : 'code' },
+            { type: isActive ? 'paragraph' : element },
             { match: n => Editor.isBlock(editor, n) }
         )
     },
@@ -74,32 +57,19 @@ export const Texteditor = (props: any) => {
         }
     }, [])
 
-    const renderLeaf = useCallback(props => {
-        return <Leaf {...props} />
-    }, [])
+    const renderLeaf = useCallback(props => {return <Leaf {...props} />}, [])
 
 
     return (
         <Slate editor={editor} value={value} onChange={value => setValue(value)}>
             <div>
-                <button
-                    onMouseDown={event => {
-                        event.preventDefault()
-                        PostEditor.toggleBoldMark(editor)
-                    }}
-                >
-                    Bold
-                </button>
-                <button
-                    onMouseDown={event => {
-                        event.preventDefault()
-                        PostEditor.toggleCodeBlock(editor)
-                    }}
-                >
-                    Code Block
-                </button>
+            <MarkButton format="bold" text="Bold"/>
+            <MarkButton format="italic" text="Italic"/>
+            <MarkButton format="underline" text="Underline"/>
             </div>
-
+            <div>
+            <ElementButton format="code" text="Code"/>
+            </div>
             <Editable
                 renderElement={renderElement}
                 renderLeaf={renderLeaf}
@@ -108,14 +78,14 @@ export const Texteditor = (props: any) => {
                     switch (event.key) {
                         case '`': {
                             event.preventDefault()
-                            PostEditor.toggleCodeBlock(editor)
+                            PostEditor.toggleBlock(editor,"code")
                             break
                         }
                         case 'b': {
                             event.preventDefault()
-                            PostEditor.toggleBoldMark(editor)
+                            PostEditor.toggleMark(editor,"bold")
                             break
-                        }
+                        }                       
                     }
                 }}
             />
@@ -132,6 +102,34 @@ const initialValue: Descendant[] = [
     },
 ]
 
+const MarkButton = ({ format, text }: { format: keyof Mark, text: string }) => {
+    const editor = useSlate()
+    return ( 
+    <button onMouseDown={event => {
+        event.preventDefault()
+        PostEditor.toggleMark(editor,format)
+    }}
+> 
+    <p>{text}</p>
+    </button>
+    )
+}
+
+const ElementButton = ({ format, text }: { format: CustomElement["type"], text: string }) => {
+    const editor = useSlate()
+    return ( 
+    <button onMouseDown={event => {
+        event.preventDefault()
+        PostEditor.toggleBlock(editor, format)
+    }}
+> 
+    <p>{text}</p>
+    </button>
+    )
+}
+
+
+
 const CodeElement = (props: any) => {
     return (
         <pre {...props.attributes}>
@@ -144,17 +142,29 @@ const DefaultElement = (props: any) => {
     return <p {...props.attributes}>{props.children}</p>
 }
 
-// Define a React component to render leaves with bold text.
-const Leaf = (props: any) => {
-    return (
-        <span
-            {...props.attributes}
-            style={{ fontWeight: props.leaf.bold ? 'bold' : 'normal' }}
-        >
-            {props.children}
-        </span>
-    )
+const ListElement = (props: any) => {
+    return <p {...props.attributes}>{props.children}</p>
 }
 
 
+// Define a React component to render leaves with bold text.
+const Leaf = ({ attributes, children, leaf }: any) => {
+    if (leaf.bold) {
+      children = <strong>{children}</strong>
+    }
+  
+    if (leaf.code) {
+      children = <code>{children}</code>
+    }
+  
+    if (leaf.italic) {
+      children = <em>{children}</em>
+    }
+  
+    if (leaf.underline) {
+      children = <u>{children}</u>
+    }
+  
+    return <span {...attributes}>{children}</span>
+  }
 

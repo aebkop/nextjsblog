@@ -16,6 +16,9 @@ export type ParagraphElement = {
 
 export type Mark = {
   bold?: boolean
+  italic?: boolean
+  code?: boolean
+  underline?: boolean
 }
 
 
