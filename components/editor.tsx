@@ -7,6 +7,9 @@ import { createEditor, Descendant, Editor, Element, Node, NodeMatch, Text, Trans
 import { Slate, Editable, withReact, useSlate } from 'slate-react'
 import { CustomEditor, CustomElement, FormattedText, Mark } from '../custom-types'
 
+//types of all elements
+type ElementType = CustomElement["type"]
+
 // Define our own custom set of helpers.
 const PostEditor = {
     isMarkActive(editor: CustomEditor, marktype: keyof Mark) {
@@ -17,7 +20,7 @@ const PostEditor = {
         return !!match
     },
 
-    isBlockActive(editor: CustomEditor, element: CustomElement["type"]) {
+    isBlockActive(editor: CustomEditor, element: ElementType) {
         const [match] = Editor.nodes(editor, {
             match: n => Element.isElement(n) && n.type === element,
         })
@@ -28,12 +31,12 @@ const PostEditor = {
         const isActive = PostEditor.isMarkActive(editor,marktype)
         Transforms.setNodes<FormattedText>(
             editor,
-            { [marktype]: isActive ? false : true },
-            { match: n => Text.isText(n), split: true }
+                { [marktype]: isActive ? false : true },
+                { match: n => Text.isText(n), split: true }
         )
     },
     
-    toggleBlock(editor: CustomEditor, element: CustomElement["type"]) {
+    toggleBlock(editor: CustomEditor, element: ElementType) {
         const isActive = this.isBlockActive(editor, element)
         Transforms.setNodes(
             editor,
@@ -115,7 +118,7 @@ const MarkButton = ({ format, text }: { format: keyof Mark, text: string }) => {
     )
 }
 
-const ElementButton = ({ format, text }: { format: CustomElement["type"], text: string }) => {
+const ElementButton = ({ format, text }: { format: ElementType, text: string }) => {
     const editor = useSlate()
     return ( 
     <button onMouseDown={event => {
