@@ -18,9 +18,9 @@ export const Postsum = ({ author, title, summary, authorid, postid }: PostsumPro
             query: { user: authorid, post: postid }
         }}  > 
         <div className="row">
-            <div className="image-wrapper">  
+            {/* <div className="image-wrapper">  
                 <Image src={"/test.png"} width="500" height="400" layout="responsive" objectFit="scale-down" objectPosition={"50% 50%"} className="post-image"/>
-            </div> 
+            </div>  */}
             <div className="post-info">
                 <h2>{title}</h2>
                 <p>{summary}</p>
@@ -32,8 +32,7 @@ export const Postsum = ({ author, title, summary, authorid, postid }: PostsumPro
                     display: flex;
                     flex-direction: row;
                     flex-wrap: nowrap;
-                    height: 10rem;
-                    width: 60rem;
+                    width: 100%;
                     position: "relative";
                     align-items: flex-start;
                     margin: 1rem;
@@ -46,7 +45,7 @@ export const Postsum = ({ author, title, summary, authorid, postid }: PostsumPro
                     margin: 0rem;
                 }
                 .post-info {
-                    width: 60%;
+                    width: 100%;
                 }
                 .image-wrapper {
                     width:200px;

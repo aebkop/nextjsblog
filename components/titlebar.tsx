@@ -32,6 +32,7 @@ export const Titlebar = ({ name }: TitlebarProps) => {
               }
               .blog-name {
                 margin-right: auto;
+                margin-left: 1rem
               }
               .navbar-item {
                 height: 4rem;
@@ -44,6 +45,7 @@ export const Titlebar = ({ name }: TitlebarProps) => {
                 height: 2rem;
                 border-radius: 6px;
                 border: 0px;
+                margin: 1rem;
               }
               button:hover {
                 filter: brightness(80%);

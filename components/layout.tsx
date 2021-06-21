@@ -5,7 +5,7 @@ export const Layout = (props: any) => {
             <style jsx>
                 {`
                 div {
-                    max-width: 60rem;
+                    max-width: 100%;
                     margin: 0 auto;
                 }
             `}

@@ -8,8 +8,7 @@ const home = ({ userid, data }: any ) => {
     if (!data) data = []
     return (
         <Layout>
-            <Titlebar name="fsdfsdf"/> 
-            <h1>{userid}</h1>
+            <Titlebar name="My Blog"/> 
             {data.map((a: any, index: number) => (
                 <Postsum key={a.id} authorid={a.userId} postid={a.id} author={"Test"} title={a.title} summary={a.body} />
             ))}
